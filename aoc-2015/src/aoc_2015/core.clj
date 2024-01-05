@@ -60,5 +60,5 @@
     (println (part-two))))
 
 (defn -main
-  [& _]
+  []
   (day2))
