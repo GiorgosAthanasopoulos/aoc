@@ -171,8 +171,11 @@
                          (swap! counter inc)))
                      @counter))
         contains-pair (fn [string]
+                        ; HINT: double-letter
+                        ; check if the indices have at least 2 spaces between them
                         ())
         contains-repeating-letter (fn [string]
+                                    ; HINT: regex again...
                                     ())
         is-string-nice-2 (fn [string]
                            ())
