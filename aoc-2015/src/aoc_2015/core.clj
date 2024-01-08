@@ -2,6 +2,8 @@
   (:gen-class)
   (:require
    [clojure.string :as str]))
+(import 'java.security.MessageDigest
+        'java.math.BigInteger)
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn day1 []
@@ -66,6 +68,7 @@
     (println (part-one))
     (println (part-two))))
 
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn day3 []
   (let [input (slurp "resources/3")
         part-one (fn []
@@ -92,7 +95,7 @@
                          visited (atom (set (str @santa-x @santa-y)))
                          idx (atom 0)]
                      (doseq [c (seq input)]
-                       (if (= @idx 0)
+                       (if (= (mod @idx 2) 0)
                          (do (cond
                                (= c \>) (swap! santa-x inc)
                                (= c \<) (swap! santa-x dec)
@@ -110,11 +113,78 @@
                              (when (not (contains? @visited (str @robot-x @robot-y)))
                                (swap! counter inc)
                                (reset! visited (conj @visited (str @robot-x @robot-y))))
-                             (swap! idx dec))))
+                             (swap! idx inc))))
                      @counter))]
-    (println (part-one))
-    (println (part-two))))
+    (prn (part-one))
+    (prn (part-two))))
+
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
+(defn day4 []
+  (let [input (str/trim-newline (slurp "resources/4"))
+        counter (atom 0)
+        key (atom (str input @counter))
+        md5 (fn [s]
+              (let [algorithm (MessageDigest/getInstance "MD5")
+                    size (* 2 (.getDigestLength algorithm))
+                    raw (.digest algorithm (.getBytes s))
+                    sig (.toString (BigInteger. 1 raw) 16)
+                    padding (apply str (repeat (- size (count sig)) "0"))]
+                (str padding sig)))
+        part-one (fn []
+                   (while (not (= (subs (md5 @key) 0 5) "00000"))
+                     (swap! counter inc)
+                     (reset! key (str input @counter)))
+                   @counter)
+        part-two (fn []
+                   (while (not (= (subs (md5 @key) 0 6) "000000"))
+                     (swap! counter inc)
+                     (reset! key (str input @counter)))
+                   @counter)]
+    (prn (part-one))
+    (prn (part-two))))
+
+(defn day5 []
+  (let [input (slurp "resources/5")
+        contains-substring (fn [main-str sub-str]
+                             (not= nil (clojure.string/index-of main-str sub-str)))
+        three-vowels (fn [string]
+                       (let [counter (atom 0)]
+                         (doseq [c (seq string)]
+                           (when (contains-substring "aeiou" (str c))
+                             (swap! counter inc)))
+                         (> @counter 2)))
+        double-letter (fn [string]
+                        (not (nil? (re-matches #".*([a-zA-Z])\1.*" string))))
+        not-contain-illegal (fn [string]
+                              (and (not (contains-substring string "ab"))
+                                   (not (contains-substring string "cd"))
+                                   (not (contains-substring string "pq"))
+                                   (not (contains-substring string "xy"))))
+        is-string-nice (fn [string]
+                         (and (three-vowels string)
+                              (double-letter string)
+                              (not-contain-illegal string)))
+        part-one (fn []
+                   (let [counter (atom 0)]
+                     (doseq [string (str/split-lines input)]
+                       (when (is-string-nice string)
+                         (swap! counter inc)))
+                     @counter))
+        contains-pair (fn [string]
+                        ())
+        contains-repeating-letter (fn [string]
+                                    ())
+        is-string-nice-2 (fn [string]
+                           ())
+        part-two (fn []
+                   (let [counter (atom 0)]
+                     (doseq [string (str/split-lines input)]
+                       (when (is-string-nice-2 string)
+                         (swap! counter inc)))
+                     @counter))]
+    (prn (part-one))
+    (prn (part-two))))
 
 (defn -main
   []
-  (day3))
+  (day5))
