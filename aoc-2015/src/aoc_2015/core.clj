@@ -87,6 +87,7 @@
                          (reset! visited (conj @visited (str @x @y)))))
                      @counter))
         part-two (fn []
+                   ; FIX: 14 away from correct result. find bug.
                    (let [counter (atom 0)
                          santa-x (atom 0)
                          santa-y (atom 0)
@@ -170,15 +171,18 @@
                        (when (is-string-nice string)
                          (swap! counter inc)))
                      @counter))
-        contains-pair (fn [string]
+        contains-pair (fn [_]
+                        ; TODO: Implement contains-pair
                         ; HINT: double-letter
                         ; check if the indices have at least 2 spaces between them
                         ())
-        contains-repeating-letter (fn [string]
+        contains-repeating-letter (fn [_]
+                                    ; TODO: Implement contains-repeating-letter
                                     ; HINT: regex again...
                                     ())
         is-string-nice-2 (fn [string]
-                           ())
+                           (and (contains-pair string)
+                                (contains-repeating-letter string)))
         part-two (fn []
                    (let [counter (atom 0)]
                      (doseq [string (str/split-lines input)]
